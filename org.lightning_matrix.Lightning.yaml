@@ -27,6 +27,24 @@ build-options:
     CARGO_NET_OFFLINE: "true"
 
 modules:
+  - name: gst-ximagesrc
+    buildsystem: meson
+    config-opts:
+      - -Dauto_features=disabled
+      - -Dximagesrc=enabled
+      - -Dximagesrc-xshm=enabled
+      - -Dximagesrc-xfixes=enabled
+      - -Dximagesrc-xdamage=enabled
+    sources:
+      - type: archive
+        url: https://gstreamer.freedesktop.org/src/gst-plugins-good/gst-plugins-good-1.26.11.tar.xz
+        sha256: 001deb0876d5d743cd3448abf74a27adec3fd850012fcb1b00994861bd6c1145
+    post-install:
+      - install -Dm644 ${FLATPAK_BUILDER_BUILDDIR}/COPYING /app/share/licenses/${FLATPAK_ID}/gst-ximagesrc/COPYING
+    cleanup:
+      - /include
+      - /lib/pkgconfig
+
   - name: lightning
     buildsystem: cmake-ninja
     config-opts:
@@ -38,13 +56,14 @@ modules:
       - -DLIGHTNING_ARTIFACT_KIND=release
       - -DLIGHTNING_ENABLE_WEBRTC=ON
       - -DLIGHTNING_REQUIRE_WEBRTC=ON
+      - -DLIGHTNING_REQUIRE_QT_SVG=ON
       - -DLIGHTNING_REQUIRE_GIF_KEYS=OFF
       - -DLIGHTNING_UPDATE_PUBKEY_2026A=pnNX0yQfhr66fpbMJ89MCNWkHVtfAr+WwI9c4OHzz50=
     sources:
       - type: git
         url: https://github.com/Mizerd/lightning.git
-        tag: v0.9.9
-        commit: 54d1bdb18656c0bff622049310c8e47621873fa5
+        tag: v0.10.0
+        commit: 1e80899775b70c0c631c05fb5b16af18099863a7
         x-checker-data:
           type: git
           tag-pattern: '^v([\d.]+)$'
